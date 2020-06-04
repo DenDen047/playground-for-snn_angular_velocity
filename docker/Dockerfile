@@ -27,6 +27,7 @@ RUN echo alias python='/usr/bin/python3.7' >> ~/.bash_aliases
 # snn_angular_velocity
 WORKDIR /work/snn_angular_velocity
 RUN python3.7 -m pip install --upgrade pip
+COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 # Data and Log Directory
