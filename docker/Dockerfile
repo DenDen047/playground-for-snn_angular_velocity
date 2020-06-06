@@ -14,7 +14,7 @@ RUN apt-get install -y build-essential
 RUN apt-get install -y libblas-dev libatlas-base-dev
 
 # Upgrade pip
-RUN apt-get install -y git wget
+RUN apt-get install -y git wget zstd
 
 # slayerPytorch
 WORKDIR /work
@@ -31,8 +31,8 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 # Data and Log Directory
-ENV data_dir $(pwd)/data
-ENV log_dir $(pwd)/logs
+ENV data_dir /work/snn_angular_velocity/data
+ENV log_dir /work/snn_angular_velocity/logs
 RUN mkdir -p $data_dir $log_dir/train $log_dir/test
 
 WORKDIR /work/snn_angular_velocity/slayerpytorch
@@ -42,33 +42,33 @@ RUN python3.7 setup.py install
 WORKDIR /work/snn_angular_velocity
 RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/models/pretrained.pt" -O pretrained/cnn5-avgp-fc1.pt
 
-WORKDIR /work/snn_angular_velocity
-RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/test.tar.zst" -O $data_dir/test.tar.zst
-WORKDIR $data_dir
-RUN zstd -vd test.tar.zst
-RUN tar -xvf test.tar
-RUN rm test.*
+# WORKDIR /work/snn_angular_velocity
+# RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/test.tar.zst" -O $data_dir/test.tar.zst
+# WORKDIR $data_dir
+# RUN zstd -vd test.tar.zst
+# RUN tar -xvf test.tar
+# RUN rm test.*
 
-WORKDIR /work/snn_angular_velocity
-RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/train.tar.zst" -O $data_dir/train.tar.zst
-WORKDIR $data_dir
-RUN zstd -vd train.tar.zst
-RUN tar -xvf train.tar
-RUN rm train.*
+# WORKDIR /work/snn_angular_velocity
+# RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/train.tar.zst" -O $data_dir/train.tar.zst
+# WORKDIR $data_dir
+# RUN zstd -vd train.tar.zst
+# RUN tar -xvf train.tar
+# RUN rm train.*
 
-WORKDIR /work/snn_angular_velocity
-RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/val.tar.zst" -O $data_dir/val.tar.zst
-WORKDIR $data_dir
-RUN zstd -vd val.tar.zst
-RUN tar -xvf val.tar
-RUN rm val.*
+# WORKDIR /work/snn_angular_velocity
+# RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/val.tar.zst" -O $data_dir/val.tar.zst
+# WORKDIR $data_dir
+# RUN zstd -vd val.tar.zst
+# RUN tar -xvf val.tar
+# RUN rm val.*
 
-WORKDIR /work/snn_angular_velocity
-RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/imgs.tar" -O $data_dir/imgs.tar
-WORKDIR $data_dir
-RUN zstd -vd imgs.tar.zst
-RUN tar -xvf imgs.tar
-RUN rm imgs.*
+# WORKDIR /work/snn_angular_velocity
+# RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/imgs.tar" -O $data_dir/imgs.tar
+# WORKDIR $data_dir
+# RUN zstd -vd imgs.tar.zst
+# RUN tar -xvf imgs.tar
+# RUN rm imgs.*
 
-WORKDIR /work/snn_angular_velocity
-RUN python3.7 test.py
+# WORKDIR /work/snn_angular_velocity
+# RUN python3.7 test.py
