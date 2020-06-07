@@ -37,38 +37,3 @@ ENV log_dir /logs
 # install slayerpytorch
 WORKDIR /work/snn_angular_velocity/slayerpytorch
 RUN python3.7 setup.py install
-
-# Download Dataset and Model
-WORKDIR /work/snn_angular_velocity
-RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/models/pretrained.pt" -O pretrained/cnn5-avgp-fc1.pt
-
-# WORKDIR /work/snn_angular_velocity
-# RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/test.tar.zst" -O $data_dir/test.tar.zst
-# WORKDIR $data_dir
-# RUN zstd -vd test.tar.zst
-# RUN tar -xvf test.tar
-# RUN rm test.*
-
-# WORKDIR /work/snn_angular_velocity
-# RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/train.tar.zst" -O $data_dir/train.tar.zst
-# WORKDIR $data_dir
-# RUN zstd -vd train.tar.zst
-# RUN tar -xvf train.tar
-# RUN rm train.*
-
-# WORKDIR /work/snn_angular_velocity
-# RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/val.tar.zst" -O $data_dir/val.tar.zst
-# WORKDIR $data_dir
-# RUN zstd -vd val.tar.zst
-# RUN tar -xvf val.tar
-# RUN rm val.*
-
-# WORKDIR /work/snn_angular_velocity
-# RUN wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/imgs.tar" -O $data_dir/imgs.tar
-# WORKDIR $data_dir
-# RUN zstd -vd imgs.tar.zst
-# RUN tar -xvf imgs.tar
-# RUN rm imgs.*
-
-# WORKDIR /work/snn_angular_velocity
-# RUN python3.7 test.py
