@@ -16,7 +16,7 @@ RUN apt-get install -y libblas-dev libatlas-base-dev
 # Upgrade pip
 RUN apt-get install -y git wget zstd
 
-# slayerPytorch
+# env for slayerPytorch
 WORKDIR /work
 RUN git clone https://github.com/uzh-rpg/snn_angular_velocity.git
 
@@ -31,10 +31,10 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 # Data and Log Directory
-ENV data_dir /work/snn_angular_velocity/data
-ENV log_dir /work/snn_angular_velocity/logs
-RUN mkdir -p $data_dir $log_dir/train $log_dir/test
+ENV data_dir /data
+ENV log_dir /logs
 
+# install slayerpytorch
 WORKDIR /work/snn_angular_velocity/slayerpytorch
 RUN python3.7 setup.py install
 

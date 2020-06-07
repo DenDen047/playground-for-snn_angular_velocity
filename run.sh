@@ -7,6 +7,8 @@ docker build -t ${IMAGE_NAME} ./docker && \
 docker run -it --rm \
     --gpus '"device=0"' \
     -v ${CURRENT_PATH}/src/:/src/ \
+    -v ${CURRENT_PATH}/data/:/data/ \
+    -v ${CURRENT_PATH}/logs/:/logs/ \
     -w /src \
     --ipc=host \
     ${IMAGE_NAME} \
