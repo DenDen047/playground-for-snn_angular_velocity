@@ -17,7 +17,7 @@ class Trainer(TBase):
         self.output_dir = self.log_config.getOutDir()
 
         test_database = TestDatabase(self.data_dir)
-        self.test_loader = torch.utils.data.DataLoader(
+        self.train_loader = torch.utils.data.DataLoader(
                 test_database,
                 batch_size=general_config['batchsize'],
                 shuffle=False,
@@ -29,17 +29,16 @@ class Trainer(TBase):
 
     def train(self):
         self._loadNetFromCheckpoint()
-        self.net = self.net.eval()
+        self.net = self.net.train()
 
-        with torch.no_grad():
-            for data in tqdm(self.test_loader, desc='testing'):
-                data = moveToGPUDevice(data, self.device, self.dtype)
+        for data in tqdm(self.train_loader, desc='training'):
+            data = moveToGPUDevice(data, self.device, self.dtype)
 
-                spike_tensor = data['spike_tensor']
-                ang_vel_gt = data['angular_velocity']
+            spike_tensor = data['spike_tensor']
+            ang_vel_gt = data['angular_velocity']
 
-                ang_vel_pred = self.net(spike_tensor)
-                self.data_collector.append(ang_vel_pred, ang_vel_gt, data['file_number'])
+            ang_vel_pred = self.net(spike_tensor)
+            self.data_collector.append(ang_vel_pred, ang_vel_gt, data['file_number'])
         if self.write_output:
             self.data_collector.writeToDisk(self.output_dir)
         self.data_collector.printErrors()
