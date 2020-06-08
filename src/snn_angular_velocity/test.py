@@ -11,7 +11,7 @@ from utils.testing import Tester
 def main():
     parser = argparse.ArgumentParser(description='Test the SNN model')
     parser.add_argument('--datadir',
-                        default=os.path.join(os.getcwd(), 'data'),
+                        default=os.path.join(os.getcwd(), '/data'),
                         help='Data directory')
     parser.add_argument('--logdir',
                         default=os.path.join(os.getcwd(), 'logs/test'),
