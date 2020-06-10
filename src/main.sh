@@ -1,7 +1,6 @@
 #!/bin/bash
 
-PWD=$(pwd)
-echo ${PWD}
+ROOT_DIR=$(pwd)
 
 # preparing directories
 mkdir -p $data_dir $log_dir/train $log_dir/test
@@ -25,21 +24,21 @@ if [ ! -f "$FILE" ]; then
     rm test.*
 fi
 
-FILE=$data_dir/train.tar.zst
-if [ ! -f "$FILE" ]; then
-    wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/train.tar.zst" -O $FILE && \
-    zstd -vd train.tar.zst && \
-    tar -xvf train.tar && \
-    rm train.*
-fi
+# FILE=$data_dir/train.tar.zst
+# if [ ! -f "$FILE" ]; then
+#     wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/train.tar.zst" -O $FILE && \
+#     zstd -vd train.tar.zst && \
+#     tar -xvf train.tar && \
+#     rm train.*
+# fi
 
-FILE=$data_dir/val.tar.zst
-if [ ! -f "$FILE" ]; then
-    wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/val.tar.zst" -O $FILE && \
-    zstd -vd val.tar.zst && \
-    tar -xvf val.tar && \
-    rm val.*
-fi
+# FILE=$data_dir/val.tar.zst
+# if [ ! -f "$FILE" ]; then
+#     wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/val.tar.zst" -O $FILE && \
+#     zstd -vd val.tar.zst && \
+#     tar -xvf val.tar && \
+#     rm val.*
+# fi
 
 # wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/imgs.tar" -O $data_dir/imgs.tar && \
 # cd $data_dir && \
@@ -47,6 +46,5 @@ fi
 # tar -xvf imgs.tar && \
 # rm imgs.*
 
-cd ${PWD}/snn_angular_velocity && \
-python train.py && \
-python test.py
+cd ${ROOT_DIR}/snn_angular_velocity
+python3.7 train.py && python3.7 test.py
