@@ -3,7 +3,8 @@ import os
 import torch
 from tqdm import tqdm
 
-from data_loader.testing import TestDatabase
+from data_loader.training import TrainDatabase
+from data_loader.validating import ValDatabase
 from model.metric import medianRelativeError, rmse
 
 from .gpu import moveToGPUDevice
@@ -18,10 +19,19 @@ class Trainer(TBase):
         self.write_output = write
         self.output_dir = self.log_config.getOutDir()
 
-        test_database = TestDatabase(self.data_dir)
+        train_database = TrainDatabase(self.data_dir)
+        val_database = ValDatabase(self.data_dir)
+        self.batchsize = general_config['batchsize']
         self.train_loader = torch.utils.data.DataLoader(
-                test_database,
-                batch_size=general_config['batchsize'],
+                train_database,
+                batch_size=self.batchsize,
+                shuffle=False,
+                num_workers=general_config['hardware']['readerThreads'],
+                pin_memory=True,
+                drop_last=False)
+        self.val_loader = torch.utils.data.DataLoader(
+                val_database,
+                batch_size=self.batchsize,
                 shuffle=False,
                 num_workers=general_config['hardware']['readerThreads'],
                 pin_memory=True,
@@ -31,29 +41,47 @@ class Trainer(TBase):
 
     def train(self):
         self._loadNetFromCheckpoint()
-        self.net = self.net.train()
 
-        optimizer = torch.optim.Adam(self.net.parameters(), lr = 0.01, amsgrad = True)
+        optimizer = torch.optim.Adam(self.net.parameters(), lr=0.0001, amsgrad=False)
 
-        for data in tqdm(self.train_loader, desc='training'):
-            data = moveToGPUDevice(data, self.device, self.dtype)
+        i = 0
+        iterations = 240000
+        while i < iterations:
+            print('iteration: {}'.format(i))
 
-            spike_tensor = data['spike_tensor']
-            ang_vel_gt = data['angular_velocity']
+            # train
+            self.net = self.net.train()
+            for data in tqdm(self.train_loader, desc='training'):
+                data = moveToGPUDevice(data, self.device, self.dtype)
 
-            ang_vel_pred = self.net(spike_tensor)
-            self.data_collector.append(ang_vel_pred, ang_vel_gt, data['file_number'])
+                spike_tensor = data['spike_tensor']
+                ang_vel_gt = data['angular_velocity']
 
-            loss = compute_loss(ang_vel_pred, ang_vel_gt)
+                optimizer.zero_grad()
 
-            optimizer.zero_grad()
-            loss.backward()
+                ang_vel_pred = self.net(spike_tensor)
 
-            optimizer.step()
+                loss = compute_loss(ang_vel_pred, ang_vel_gt)
 
-        if self.write_output:
-            self.data_collector.writeToDisk(self.output_dir)
-        self.data_collector.printErrors()
+                loss.backward()
+
+                optimizer.step()
+            i += self.batchsize
+
+            # val
+            self.net = self.net.eval()
+            for data in tqdm(self.val_loader, desc='val in training'):
+                data = moveToGPUDevice(data, self.device, self.dtype)
+
+                spike_tensor = data['spike_tensor']
+                ang_vel_gt = data['angular_velocity']
+
+                ang_vel_pred = self.net(spike_tensor)
+                self.data_collector.append(ang_vel_pred, ang_vel_gt, data['file_number'])
+
+            if self.write_output:
+                self.data_collector.writeToDisk(self.output_dir)
+            self.data_collector.printErrors()
 
 
 class DataCollector:

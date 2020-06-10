@@ -9,16 +9,16 @@ from utils.training import Trainer
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Test the SNN model')
+    parser = argparse.ArgumentParser(description='Train the SNN model')
     parser.add_argument('--datadir',
                         default=os.path.join(os.getcwd(), '/data'),
                         help='Data directory')
     parser.add_argument('--logdir',
-                        default=os.path.join(os.getcwd(), 'logs/test'),
-                        help='Test logging directory')
+                        default=os.path.join(os.getcwd(), 'logs/train'),
+                        help='Train logging directory')
     parser.add_argument('--config',
-                        default=os.path.join(os.getcwd(), 'test_config.yaml'),
-                        help='Path to test config file')
+                        default=os.path.join(os.getcwd(), 'train_config.yaml'),
+                        help='Path to train config file')
     parser.add_argument('--write',
                         action='store_true',
                         help='Write network predictions to logging sub-directory')
