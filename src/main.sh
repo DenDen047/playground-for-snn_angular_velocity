@@ -1,31 +1,45 @@
 #!/bin/bash
 
+PWD=$(pwd)
+echo ${PWD}
+
 # preparing directories
 mkdir -p $data_dir $log_dir/train $log_dir/test
 
 
 # Download Dataset and Model
-cd ./snn_angular_velocity && \
-wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/models/pretrained.pt" -O pretrained/cnn5-avgp-fc1.pt
+cd $(pwd)/snn_angular_velocity
+FILE=pretrained/cnn5-avgp-fc1.pt
+if [ ! -f "$FILE" ]; then
+    wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/models/pretrained.pt" -O $FILE
+fi
 
 # Download and extract test dataset.
-wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/test.tar.zst" -O $data_dir/test.tar.zst && \
-cd $data_dir && \
-zstd -vd test.tar.zst && \
-tar -xvf test.tar && \
-rm test.*
+cd $data_dir
 
-# wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/train.tar.zst" -O $data_dir/train.tar.zst && \
-# cd $data_dir && \
-# zstd -vd train.tar.zst && \
-# tar -xvf train.tar && \
-# rm train.*
+FILE=$data_dir/test.tar.zst
+if [ ! -f "$FILE" ]; then
+    wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/test.tar.zst" -O $FILE && \
+    zstd -vd test.tar.zst && \
+    tar -xvf test.tar && \
+    rm test.*
+fi
 
-# wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/val.tar.zst" -O $data_dir/val.tar.zst && \
-# cd $data_dir && \
-# zstd -vd val.tar.zst && \
-# tar -xvf val.tar && \
-# rm val.*
+FILE=$data_dir/train.tar.zst
+if [ ! -f "$FILE" ]; then
+    wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/train.tar.zst" -O $FILE && \
+    zstd -vd train.tar.zst && \
+    tar -xvf train.tar && \
+    rm train.*
+fi
+
+FILE=$data_dir/val.tar.zst
+if [ ! -f "$FILE" ]; then
+    wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/val.tar.zst" -O $FILE && \
+    zstd -vd val.tar.zst && \
+    tar -xvf val.tar && \
+    rm val.*
+fi
 
 # wget "http://rpg.ifi.uzh.ch/data/snn_angular_velocity/dataset/imgs.tar" -O $data_dir/imgs.tar && \
 # cd $data_dir && \
@@ -33,5 +47,6 @@ rm test.*
 # tar -xvf imgs.tar && \
 # rm imgs.*
 
-cd ./snn_angular_velocity && \
+cd ${PWD}/snn_angular_velocity && \
+python train.py && \
 python test.py
