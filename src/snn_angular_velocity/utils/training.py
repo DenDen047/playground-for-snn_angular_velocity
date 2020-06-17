@@ -40,12 +40,12 @@ class Trainer(TBase):
         self.data_collector = DataCollector(general_config['simulation']['tStartLoss'])
 
     def train(self):
-        self._loadNetFromCheckpoint()
+        self._loadNetFromCheckpoint(checkpoint=False)
 
         optimizer = torch.optim.Adam(self.net.parameters(), lr=0.0001, amsgrad=False)
 
         i = 0
-        iterations = 240000
+        iterations = 2400 # 240000
         while i < iterations:
             print('iteration: {}'.format(i))
 
@@ -70,19 +70,19 @@ class Trainer(TBase):
 
             i += self.batchsize
 
-            # # val
-            # self.net = self.net.eval()
-            # for data in tqdm(self.val_loader, desc='val in training'):
-            #     data = moveToGPUDevice(data, self.device, self.dtype)
+            # val
+            self.net = self.net.eval()
+            for data in tqdm(self.val_loader, desc='val in training'):
+                data = moveToGPUDevice(data, self.device, self.dtype)
 
-            #     spike_tensor = data['spike_tensor']
-            #     ang_vel_gt = data['angular_velocity']
+                spike_tensor = data['spike_tensor']
+                ang_vel_gt = data['angular_velocity']
 
-            #     ang_vel_pred = self.net(spike_tensor)
-            #     self.data_collector.append(ang_vel_pred, ang_vel_gt, data['file_number'])
+                ang_vel_pred = self.net(spike_tensor)
+                self.data_collector.append(ang_vel_pred, ang_vel_gt, data['file_number'])
 
-            # if self.write_output:
-            #     self.data_collector.writeToDisk(self.output_dir)
+            if self.write_output:
+                self.data_collector.writeToDisk(self.output_dir)
             self.data_collector.printErrors()
 
 

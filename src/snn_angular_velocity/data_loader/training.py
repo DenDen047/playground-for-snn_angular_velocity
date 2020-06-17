@@ -7,7 +7,7 @@ class TrainDatabase(DatasetBase):
     def __init__(self, data_dir: str):
         super().__init__(mode='train')
         assert os.path.isdir(data_dir)
-        self.train_dir = os.path.join(data_dir, 'test')
+        self.train_dir = os.path.join(data_dir, 'val')
         assert os.path.isdir(self.train_dir)
 
         self.subsequences = list()

@@ -16,15 +16,18 @@ class TBase:
         self.device = self.general_config['hardware']['gpuDevice']
         self.dtype = self.general_config['model']['dtype']
 
-    def _loadNetFromCheckpoint(self):
+    def _loadNetFromCheckpoint(self, checkpoint=True):
         ckpt_file = self.general_config['model']['CkptFile']
         print('Loading checkpoint from {}'.format(ckpt_file))
         assert ckpt_file
         checkpoint = torch.load(ckpt_file,
                 map_location=self.general_config['hardware']['gpuDevice'])
 
-        self.net = getNetwork(self.general_config['model']['type'],
-                self.general_config['simulation'])
-        self.net.load_state_dict(checkpoint['model_state_dict'])
+        self.net = getNetwork(
+            self.general_config['model']['type'],
+            self.general_config['simulation']
+        )
+        if checkpoint:
+            self.net.load_state_dict(checkpoint['model_state_dict'])
         moveToGPUDevice(self.net, self.device, self.dtype)
         self.log_config.copyModelFile(self.net)
