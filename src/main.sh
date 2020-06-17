@@ -44,4 +44,5 @@ fi
 # rm imgs.*
 
 cd ${ROOT_DIR}/snn_angular_velocity
-python3.7 train.py && python3.7 test.py
+python3.7 train.py --write && \
+python3.7 test.py --write

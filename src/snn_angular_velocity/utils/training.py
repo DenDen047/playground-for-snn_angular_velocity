@@ -51,6 +51,7 @@ class Trainer(TBase):
 
             # train
             self.net = self.net.train()
+            loss_stored = []
             for data in tqdm(self.train_loader, desc='training'):
                 data = moveToGPUDevice(data, self.device, self.dtype)
 
@@ -67,23 +68,27 @@ class Trainer(TBase):
                 optimizer.step()
 
                 self.data_collector.append(ang_vel_pred, ang_vel_gt, data['file_number'])
+                loss_stored.append(loss.item())
 
             i += self.batchsize
 
-            # val
-            self.net = self.net.eval()
-            for data in tqdm(self.val_loader, desc='val in training'):
-                data = moveToGPUDevice(data, self.device, self.dtype)
 
-                spike_tensor = data['spike_tensor']
-                ang_vel_gt = data['angular_velocity']
+            # # val
+            # self.net = self.net.eval()
+            # for data in tqdm(self.val_loader, desc='val in training'):
+            #     data = moveToGPUDevice(data, self.device, self.dtype)
 
-                ang_vel_pred = self.net(spike_tensor)
-                self.data_collector.append(ang_vel_pred, ang_vel_gt, data['file_number'])
+            #     spike_tensor = data['spike_tensor']
+            #     ang_vel_gt = data['angular_velocity']
 
+            #     ang_vel_pred = self.net(spike_tensor)
+            #     self.data_collector.append(ang_vel_pred, ang_vel_gt, data['file_number'])
+
+            # training information
             if self.write_output:
                 self.data_collector.writeToDisk(self.output_dir)
             self.data_collector.printErrors()
+            print('avg_loss: {}'.format(np.mean(loss_stored)))
 
 
 class DataCollector:
